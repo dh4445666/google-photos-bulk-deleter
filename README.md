@@ -14,13 +14,13 @@ A Chrome extension to bulk delete your Google Photos in one click — no coding 
 You do **not** need to install any extension! Simply download the standalone executable for your operating system from the [Releases](https://github.com/dh4445666/google-photos-bulk-deleter/releases) page.
 
 **Windows**:
-1. Download `GooglePhotosBulkDeleter-Windows.exe` and double click it.
+1. Download `gdpd-Windows.exe` and double click it.
 2. It will open a Chrome browser. Log into your Google account if asked.
 3. The tool will automatically inject the control panel into the Google Photos page!
 
 **Linux**:
-1. Download `GooglePhotosBulkDeleter-Linux`.
-2. Make it executable (`chmod +x GooglePhotosBulkDeleter-Linux`) and run it in your terminal.
+1. Download `gdpd-Linux`.
+2. Make it executable (`chmod +x gdpd-Linux`) and run it in your terminal.
 3. Use the browser that pops up just like the Windows instructions.
 
 ### Option 2: Browser Extension

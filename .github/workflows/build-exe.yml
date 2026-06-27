@@ -3,7 +3,8 @@ name: Build Standalone Executables
 on:
   push:
     tags:
-      - 'v*'
+      - '*'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,11 +14,11 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-            artifact_name: GooglePhotosBulkDeleter.exe
-            asset_name: GooglePhotosBulkDeleter-Windows.exe
+            artifact_name: gdpd.exe
+            asset_name: gdpd-Windows.exe
           - os: ubuntu-latest
-            artifact_name: GooglePhotosBulkDeleter
-            asset_name: GooglePhotosBulkDeleter-Linux
+            artifact_name: gdpd
+            asset_name: gdpd-Linux
             
     permissions:
       contents: write
@@ -39,15 +40,15 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
-          pyinstaller --noconfirm --onefile --console --name "GooglePhotosBulkDeleter" --add-data "content.js:." app.py
+          pyinstaller --noconfirm --onefile --console --name "gdpd" --add-data "content.js:." app.py
 
       - name: Rename Artifact (Windows)
         if: matrix.os == 'windows-latest'
-        run: move dist\GooglePhotosBulkDeleter.exe dist\${{ matrix.asset_name }}
+        run: move dist\gdpd.exe dist\${{ matrix.asset_name }}
 
       - name: Rename Artifact (Linux)
         if: matrix.os == 'ubuntu-latest'
-        run: mv dist/GooglePhotosBulkDeleter dist/${{ matrix.asset_name }}
+        run: mv dist/gdpd dist/${{ matrix.asset_name }}
 
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v1
