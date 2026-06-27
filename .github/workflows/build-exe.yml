@@ -40,7 +40,7 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
-          pyinstaller --noconfirm --onefile --console --name "gdpd" --add-data "content.js:." app.py
+          pyinstaller --noconfirm --onefile --console --name "gdpd" --add-data "content.js:." --collect-all selenium app.py
 
       - name: Zip Extension Files
         if: matrix.os == 'ubuntu-latest'

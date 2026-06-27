@@ -2,6 +2,9 @@ import os
 import sys
 import time
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.edge.options import Options as EdgeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.common.exceptions import WebDriverException
 
 def get_resource_path(relative_path):
@@ -18,7 +21,7 @@ def get_driver():
     
     # Try Chrome
     try:
-        options = webdriver.ChromeOptions()
+        options = ChromeOptions()
         options.add_argument(f"user-data-dir={user_data_dir}_chrome")
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
@@ -29,7 +32,7 @@ def get_driver():
 
     # Try Edge
     try:
-        options = webdriver.EdgeOptions()
+        options = EdgeOptions()
         options.add_argument(f"user-data-dir={user_data_dir}_edge")
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
@@ -40,7 +43,7 @@ def get_driver():
 
     # Try Firefox
     try:
-        options = webdriver.FirefoxOptions()
+        options = FirefoxOptions()
         print("Launching Firefox...")
         return webdriver.Firefox(options=options)
     except Exception as e:
