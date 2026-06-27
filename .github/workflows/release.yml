@@ -1,0 +1,27 @@
+name: Build and Release Extension
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Create ZIP archive
+        run: |
+          zip -r gpdt-extension.zip . -x "*.git*" -x ".github/*" -x "gpdt-extension.crx" -x "google-photos-bulk-deleter.zip"
+          
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: gpdt-extension.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
