@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Photos Bulk Deleter</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0f0f1a;
+    color: #e0e0e0;
+    width: 320px;
+    padding: 16px;
+    user-select: none;
+  }
+
+  .gpdt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .gpdt-title {
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .gpdt-pin-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .gpdt-pin-btn:hover { background: rgba(255,255,255,0.15); }
+  
+  .gpdt-settings {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+  }
+  .gpdt-settings input {
+    width: 70px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-align: right;
+    font-family: inherit;
+  }
+
+  .gpdt-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #a1a1aa;
+    margin-bottom: 12px;
+  }
+  .gpdt-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #666;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .gpdt-status-dot.running { background: #22c55e; animation: gpdt-pulse 1.5s infinite; }
+  .gpdt-status-dot.paused { background: #f59e0b; animation: gpdt-pulse 2s infinite; }
+  .gpdt-status-dot.done { background: #4f8cff; }
+  .gpdt-status-dot.error { background: #ef4444; }
+  @keyframes gpdt-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+  }
+
+  .gpdt-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .gpdt-stat {
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+  }
+  .gpdt-stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+  .gpdt-stat-label {
+    font-size: 10px;
+    color: #71717a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  .gpdt-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .gpdt-progress-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .gpdt-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4f8cff, #6c5ce7);
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .gpdt-progress-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #a1a1aa;
+    min-width: 32px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .gpdt-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .gpdt-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .gpdt-btn:active { transform: scale(0.97); }
+  .gpdt-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .gpdt-btn-start {
+    background: linear-gradient(135deg, #4f8cff, #6c5ce7);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(79,140,255,0.3);
+  }
+  .gpdt-btn-start:hover:not(:disabled) { opacity: 0.9; }
+  .gpdt-btn-pause {
+    background: #f59e0b;
+    color: #fff;
+  }
+  .gpdt-btn-pause:hover:not(:disabled) { background: #d97706; }
+  .gpdt-btn-stop {
+    background: #ef4444;
+    color: #fff;
+  }
+  .gpdt-btn-stop:hover:not(:disabled) { background: #dc2626; }
+
+  .gpdt-logs {
+    background: #181825;
+    border-radius: 8px;
+    padding: 8px;
+    height: 80px;
+    overflow-y: auto;
+    font-size: 11px;
+    color: #a1a1aa;
+    font-family: monospace;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .gpdt-logs div {
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 2px;
+  }
+  .gpdt-logs div:last-child {
+    border-bottom: none;
+  }
+  .gpdt-hidden { display: none !important; }
+
+  #error-msg {
+    display: none;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 0.82rem;
+    color: #fca5a5;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="gpdt-header">
+  <div class="gpdt-title">🗑️ Photos Bulk Deleter</div>
+  <button id="pin-btn" class="gpdt-pin-btn" title="Pin to Screen (injects UI into page)">📌 Pin to Screen</button>
+</div>
+
+<div id="error-msg"></div>
+
+<div class="gpdt-settings">
+  <label for="max-count">Target Photos to Delete:</label>
+  <input type="number" id="max-count" value="500" min="1" />
+</div>
+
+<div class="gpdt-status-bar">
+  <span class="gpdt-status-dot" id="status-dot"></span>
+  <span id="status-text">Checking context...</span>
+</div>
+
+<div class="gpdt-stats">
+  <div class="gpdt-stat">
+    <div class="gpdt-stat-value" id="stat-deleted">0</div>
+    <div class="gpdt-stat-label">Deleted</div>
+  </div>
+  <div class="gpdt-stat">
+    <div class="gpdt-stat-value" id="stat-speed">—</div>
+    <div class="gpdt-stat-label">Per min</div>
+  </div>
+  <div class="gpdt-stat">
+    <div class="gpdt-stat-value" id="stat-elapsed">0s</div>
+    <div class="gpdt-stat-label">Elapsed</div>
+  </div>
+  <div class="gpdt-stat">
+    <div class="gpdt-stat-value" id="stat-eta">—</div>
+    <div class="gpdt-stat-label">ETA</div>
+  </div>
+</div>
+
+<div class="gpdt-progress">
+  <div class="gpdt-progress-bar">
+    <div class="gpdt-progress-fill" id="progress-fill"></div>
+  </div>
+  <span class="gpdt-progress-label" id="progress-label">0%</span>
+</div>
+
+<div class="gpdt-controls">
+  <button id="start-btn" class="gpdt-btn gpdt-btn-start" disabled>▶ Start</button>
+  <button id="pause-btn" class="gpdt-btn gpdt-btn-pause gpdt-hidden">⏸ Pause</button>
+  <button id="resume-btn" class="gpdt-btn gpdt-btn-start gpdt-hidden">▶ Resume</button>
+  <button id="stop-btn" class="gpdt-btn gpdt-btn-stop gpdt-hidden">⏹ Stop</button>
+</div>
+
+<div class="gpdt-logs" id="logs-container">
+  <div>Ready to start.</div>
+</div>
+
+<div style="text-align: center; font-size: 10px; color: #71717a; margin-top: 12px;">
+  Inspired by <a href="https://github.com/shtse8/Google-Photos-Delete-Tool" target="_blank" style="color: #4f8cff; text-decoration: none;">shtse8's Google-Photos-Delete-Tool</a>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Setup Guide — Google Photos Bulk Deleter</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0f0f1a;
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 60px;
+  }
+
+  .hero { text-align: center; margin-bottom: 40px; }
+  .hero-emoji { font-size: 52px; display: block; margin-bottom: 14px; }
+  .hero h1 { font-size: 1.9rem; font-weight: 800; color: #fff; margin-bottom: 10px; }
+  .hero p { color: #a1a1aa; font-size: 1rem; max-width: 460px; margin: 0 auto; line-height: 1.6; }
+
+  .badge {
+    display: inline-block;
+    background: rgba(34,197,94,0.15);
+    border: 1px solid rgba(34,197,94,0.4);
+    color: #86efac;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 20px;
+    padding: 28px 32px;
+    max-width: 560px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .steps { display: flex; flex-direction: column; gap: 0; }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    position: relative;
+    padding-bottom: 24px;
+  }
+  .step:last-child { padding-bottom: 0; }
+
+  /* Vertical connector line */
+  .step:not(:last-child) .step-left::after {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 34px;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, rgba(79,140,255,0.4), transparent);
+  }
+
+  .step-left { position: relative; flex-shrink: 0; }
+
+  .step-num {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4f8cff, #6c5ce7);
+    color: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-body { padding-top: 6px; }
+  .step-body h3 { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 5px; }
+  .step-body p { font-size: 0.86rem; color: #a1a1aa; line-height: 1.55; }
+  .step-body p strong { color: #c8c8e0; }
+
+  /* Screenshot mockup boxes */
+  .mockup {
+    margin-top: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.78rem;
+    color: #71717a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .mockup-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 0.76rem;
+    color: #a0a0b0;
+    font-family: monospace;
+    flex-shrink: 0;
+  }
+  .mockup-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(79,140,255,0.15);
+    border: 1px solid rgba(79,140,255,0.4);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 0.76rem;
+    color: #7dd3fc;
+    flex-shrink: 0;
+  }
+  .toggle-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #4f8cff;
+    flex-shrink: 0;
+  }
+  .folder-icon { font-size: 1.1rem; }
+
+  .code-pill {
+    display: inline-block;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 1px 7px;
+    font-family: monospace;
+    font-size: 0.82rem;
+    color: #c8c8e0;
+  }
+
+  /* After setup box */
+  .after-setup {
+    background: linear-gradient(135deg, rgba(79,140,255,0.1), rgba(108,92,231,0.1));
+    border: 1px solid rgba(79,140,255,0.3);
+    border-radius: 16px;
+    padding: 20px 24px;
+    max-width: 560px;
+    width: 100%;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .after-setup h2 { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .after-setup p { font-size: 0.85rem; color: #a1a1aa; line-height: 1.5; }
+  .after-setup .big-arrow { font-size: 2rem; margin: 10px 0; display: block; }
+
+  .ext-popup-preview {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 10px 20px;
+    margin-top: 12px;
+    font-size: 0.8rem;
+    color: #c8c8e0;
+  }
+  .big-btn-preview {
+    background: linear-gradient(135deg, #4f8cff, #6c5ce7);
+    color: #fff;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .warn-note {
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.82rem;
+    color: #d97706;
+    line-height: 1.5;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    max-width: 560px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  footer { margin-top: 16px; font-size: 0.78rem; color: #2a2a40; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <span class="hero-emoji">🗑️</span>
+  <div class="badge">✓ One-time setup · Then one click forever</div>
+  <h1>Google Photos Bulk Deleter</h1>
+  <p>Install this Chrome Extension once, then delete all your Google Photos with a single click — no coding, no console, ever.</p>
+</div>
+
+<!-- Setup steps -->
+<div class="card">
+  <div class="card-title">🔧 One-time setup (takes ~1 minute)</div>
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num">1</div>
+      </div>
+      <div class="step-body">
+        <h3>Unzip the downloaded folder</h3>
+        <p>You should have downloaded a file called <strong>google-photos-bulk-deleter.zip</strong>. Right-click it → <strong>Extract All</strong> (Windows) or double-click (Mac). You'll get a folder.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num">2</div>
+      </div>
+      <div class="step-body">
+        <h3>Open Chrome Extensions page</h3>
+        <p>In Chrome, type this in your address bar and press Enter:</p>
+        <div class="mockup" style="margin-top:8px;">
+          <div class="mockup-bar">🔒 chrome://extensions</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num">3</div>
+      </div>
+      <div class="step-body">
+        <h3>Turn on "Developer mode"</h3>
+        <p>Look for the <strong>Developer mode</strong> toggle in the top-right corner of the page and turn it <strong>ON</strong>.</p>
+        <div class="mockup">
+          <span>Developer mode</span>
+          <div class="mockup-toggle">
+            <div class="toggle-dot"></div> ON
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num">4</div>
+      </div>
+      <div class="step-body">
+        <h3>Click "Load unpacked" and select the folder</h3>
+        <p>A button called <strong>Load unpacked</strong> will appear at the top-left. Click it, then browse to and select the <strong>gpdt-extension</strong> folder you unzipped in Step 1.</p>
+        <div class="mockup">
+          <span class="folder-icon">📂</span>
+          <span>Select the <strong style="color:#c8c8e0;">gpdt-extension</strong> folder</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left">
+        <div class="step-num">5</div>
+      </div>
+      <div class="step-body">
+        <h3>Done! The extension is installed ✅</h3>
+        <p>You'll see <strong>"Google Photos Bulk Deleter"</strong> appear in your extensions list. You only need to do this setup once.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- After setup -->
+<div class="after-setup">
+  <h2>🎉 From now on — it's just one click</h2>
+  <p>Every time you want to delete photos, just go to <strong style="color:#fff;">photos.google.com</strong> and click the extension icon 🗑️ in your Chrome toolbar.</p>
+  <span class="big-arrow">⬇️</span>
+  <div class="ext-popup-preview">
+    <span style="font-size:0.75rem; color:#71717a;">Extension popup appears</span>
+    <div class="big-btn-preview">▶  Start Deleting Photos</div>
+    <span style="font-size:0.73rem; color:#71717a;">Click and the tool launches instantly</span>
+  </div>
+</div>
+
+<div class="warn-note">
+  <span>⚠️</span>
+  <span>Photos are moved to <strong>Trash</strong>, not immediately deleted permanently. Google keeps them for <strong>60 days</strong> before erasing forever — so you have time to recover mistakes.</span>
+</div>
+
+<footer>This extension runs entirely in your browser. No data is sent anywhere.</footer>
+
+</body>
+</html>
