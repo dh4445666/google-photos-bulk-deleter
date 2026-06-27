@@ -2,12 +2,6 @@ import os
 import sys
 import time
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.edge.service import Service as EdgeService
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.microsoft import EdgeChromiumDriverManager
-from webdriver_manager.firefox import GeckoDriverManager
 from selenium.common.exceptions import WebDriverException
 
 def get_resource_path(relative_path):
@@ -20,6 +14,7 @@ def get_resource_path(relative_path):
 
 def get_driver():
     user_data_dir = os.path.join(os.path.expanduser("~"), ".gpdt_profile")
+    errors = []
     
     # Try Chrome
     try:
@@ -27,11 +22,10 @@ def get_driver():
         options.add_argument(f"user-data-dir={user_data_dir}_chrome")
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
-        service = ChromeService(ChromeDriverManager().install())
         print("Launching Chrome...")
-        return webdriver.Chrome(service=service, options=options)
+        return webdriver.Chrome(options=options)
     except Exception as e:
-        pass
+        errors.append(f"Chrome error: {e}")
 
     # Try Edge
     try:
@@ -39,21 +33,21 @@ def get_driver():
         options.add_argument(f"user-data-dir={user_data_dir}_edge")
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option('useAutomationExtension', False)
-        service = EdgeService(EdgeChromiumDriverManager().install())
         print("Launching Edge...")
-        return webdriver.Edge(service=service, options=options)
+        return webdriver.Edge(options=options)
     except Exception as e:
-        pass
+        errors.append(f"Edge error: {e}")
 
     # Try Firefox
     try:
         options = webdriver.FirefoxOptions()
-        # Firefox profiles are a bit different, we'll just run default for fallback
-        service = FirefoxService(GeckoDriverManager().install())
         print("Launching Firefox...")
-        return webdriver.Firefox(service=service, options=options)
+        return webdriver.Firefox(options=options)
     except Exception as e:
-        pass
+        errors.append(f"Firefox error: {e}")
+        
+    for err in errors:
+        print(err)
         
     return None
 
