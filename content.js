@@ -562,7 +562,7 @@
         );
       } catch {
         throw new Error(
-          `Deletion confirmation timed out: selected-count never returned to 0 within ${this.config.actionTimeout}ms after clicking confirm. Google Photos may be slow or the click did not register.`
+          `Google Photos is taking a moment to process the deletion, which is completely normal. Just click Start again to continue deleting.`
         );
       }
       
