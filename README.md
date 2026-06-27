@@ -9,16 +9,10 @@ A Chrome extension to bulk delete your Google Photos in one click — no coding 
 - **Detailed Logs**: View execution logs right in the popup.
 
 ## Installation
-1. Download the `.crx` file from the releases.
-2. Go to `chrome://extensions/` in Chrome.
-3. Enable "Developer mode" in the top right corner.
-4. Drag and drop the `.crx` file into the extensions page.
-
-Alternatively, you can load it unpacked:
 1. Clone or download this repository.
 2. Go to `chrome://extensions/`.
 3. Enable "Developer mode".
-4. Click "Load unpacked" and select the extension folder.
+4. Click "Load unpacked" and select the extracted extension folder.
 
 ## Usage
 1. Go to [Google Photos](https://photos.google.com).
