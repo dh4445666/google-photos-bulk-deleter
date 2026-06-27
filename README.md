@@ -1,6 +1,6 @@
 # Google Photos Bulk Deleter
 
-A Chrome extension to bulk delete your Google Photos in one click — no coding needed.
+A Chrome extension to bulk delete your Google Photos in one click — no coding or console help needed.
 
 ## Features
 - **One-Click Deletion**: Automatically selects and deletes photos in batches.
