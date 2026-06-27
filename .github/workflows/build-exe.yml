@@ -1,0 +1,57 @@
+name: Build Standalone Executables
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            artifact_name: GooglePhotosBulkDeleter.exe
+            asset_name: GooglePhotosBulkDeleter-Windows.exe
+          - os: ubuntu-latest
+            artifact_name: GooglePhotosBulkDeleter
+            asset_name: GooglePhotosBulkDeleter-Linux
+            
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --noconfirm --onefile --console --name "GooglePhotosBulkDeleter" --add-data "content.js:." app.py
+
+      - name: Rename Artifact (Windows)
+        if: matrix.os == 'windows-latest'
+        run: move dist\GooglePhotosBulkDeleter.exe dist\${{ matrix.asset_name }}
+
+      - name: Rename Artifact (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: mv dist/GooglePhotosBulkDeleter dist/${{ matrix.asset_name }}
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/${{ matrix.asset_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

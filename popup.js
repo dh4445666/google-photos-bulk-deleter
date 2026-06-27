@@ -98,6 +98,9 @@ const updateUI = (progress) => {
       const etaMs = remaining > 0 ? (remaining / rate) * 6e4 : 0;
       $eta.textContent = formatEta(etaMs);
     }
+  } else if (elapsed > 0) {
+    $eta.textContent = "Calc...";
+    $speed.textContent = "—";
   }
 
   const percent = progress.maxCount > 0 

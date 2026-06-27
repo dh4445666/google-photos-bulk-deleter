@@ -8,17 +8,30 @@ A Chrome extension to bulk delete your Google Photos in one click — no coding 
 - **Custom Targets**: Specify exactly how many photos you want to delete.
 - **Detailed Logs**: View execution logs right in the popup.
 
-## Installation
-1. Clone or download this repository.
-2. Go to `chrome://extensions/`.
-3. Enable "Developer mode".
-4. Click "Load unpacked" and select the extracted extension folder.
+## Installation & Usage
 
-## Usage
-1. Go to [Google Photos](https://photos.google.com).
-2. Click on the extension icon in the toolbar.
-3. Set your target deletion count and click **Start**.
-4. (Optional) Click **Pin to Screen** if you want to close the popup but still monitor progress on the page.
+### Option 1: Standalone Application (Easiest)
+You do **not** need to install any extension! Simply download the standalone executable for your operating system from the [Releases](https://github.com/dh4445666/google-photos-bulk-deleter/releases) page.
+
+**Windows**:
+1. Download `GooglePhotosBulkDeleter-Windows.exe` and double click it.
+2. It will open a Chrome browser. Log into your Google account if asked.
+3. The tool will automatically inject the control panel into the Google Photos page!
+
+**Linux**:
+1. Download `GooglePhotosBulkDeleter-Linux`.
+2. Make it executable (`chmod +x GooglePhotosBulkDeleter-Linux`) and run it in your terminal.
+3. Use the browser that pops up just like the Windows instructions.
+
+### Option 2: Browser Extension
+If you prefer to install it as an extension:
+1. Download `gpdt-extension.zip` from [Releases](https://github.com/dh4445666/google-photos-bulk-deleter/releases).
+2. Extract the folder.
+3. In Chrome, go to `chrome://extensions/`.
+4. Enable **Developer mode** in the top right.
+5. Click **Load unpacked** and select the extracted folder.
+6. Go to Google Photos and click the extension icon to begin.
+
 
 ## Credits
 This extension was heavily inspired by the awesome work of **shtse8**. Check out the original script here:
