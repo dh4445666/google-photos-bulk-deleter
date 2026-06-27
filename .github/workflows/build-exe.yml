@@ -42,6 +42,11 @@ jobs:
         run: |
           pyinstaller --noconfirm --onefile --console --name "gdpd" --add-data "content.js:." app.py
 
+      - name: Zip Extension Files
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          zip -r dist/gdpd-extension.zip manifest.json content.js popup.js popup.html popup.css icons/ README.md
+
       - name: Rename Artifact (Windows)
         if: matrix.os == 'windows-latest'
         run: move dist\gdpd.exe dist\${{ matrix.asset_name }}
@@ -53,6 +58,8 @@ jobs:
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/${{ matrix.asset_name }}
+          files: |
+            dist/${{ matrix.asset_name }}
+            dist/gdpd-extension.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

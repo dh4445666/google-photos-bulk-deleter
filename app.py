@@ -3,38 +3,68 @@ import sys
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.edge.service import Service as EdgeService
+from selenium.webdriver.firefox.service import Service as FirefoxService
 from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
+from webdriver_manager.firefox import GeckoDriverManager
 from selenium.common.exceptions import WebDriverException
 
 def get_resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
+def get_driver():
+    user_data_dir = os.path.join(os.path.expanduser("~"), ".gpdt_profile")
+    
+    # Try Chrome
+    try:
+        options = webdriver.ChromeOptions()
+        options.add_argument(f"user-data-dir={user_data_dir}_chrome")
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option('useAutomationExtension', False)
+        service = ChromeService(ChromeDriverManager().install())
+        print("Launching Chrome...")
+        return webdriver.Chrome(service=service, options=options)
+    except Exception as e:
+        pass
+
+    # Try Edge
+    try:
+        options = webdriver.EdgeOptions()
+        options.add_argument(f"user-data-dir={user_data_dir}_edge")
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option('useAutomationExtension', False)
+        service = EdgeService(EdgeChromiumDriverManager().install())
+        print("Launching Edge...")
+        return webdriver.Edge(service=service, options=options)
+    except Exception as e:
+        pass
+
+    # Try Firefox
+    try:
+        options = webdriver.FirefoxOptions()
+        # Firefox profiles are a bit different, we'll just run default for fallback
+        service = FirefoxService(GeckoDriverManager().install())
+        print("Launching Firefox...")
+        return webdriver.Firefox(service=service, options=options)
+    except Exception as e:
+        pass
+        
+    return None
+
 def main():
     print("========================================")
     print("  Google Photos Bulk Deleter - Standalone")
     print("========================================")
-    print("\nStarting Chrome browser...")
 
-    chrome_options = Options()
-    
-    # Store user data in a local folder so login sessions are kept between runs
-    user_data_dir = os.path.join(os.path.expanduser("~"), ".gpdt_profile")
-    chrome_options.add_argument(f"user-data-dir={user_data_dir}")
-    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    chrome_options.add_experimental_option('useAutomationExtension', False)
-
-    try:
-        service = ChromeService(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
-    except Exception as e:
-        print(f"Error launching Chrome: {e}")
+    driver = get_driver()
+    if not driver:
+        print("Error: Could not launch Chrome, Edge, or Firefox. Please ensure at least one is installed.")
         input("Press Enter to exit...")
         return
 
